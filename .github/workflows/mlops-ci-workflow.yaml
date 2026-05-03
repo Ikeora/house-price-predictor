@@ -1,6 +1,5 @@
 name: MLops CI
 
-
 on:
   workflow_dispatch: {}
 
