@@ -42,7 +42,7 @@ async def health_check():
     return {"status": "healthy", "model_loaded": True}
 
 # metrics endpoint
-@app.get("/metrics", response_model=dict)
+#@app.get("/metrics", response_model=dict)
 
 
 # Prediction endpoint
