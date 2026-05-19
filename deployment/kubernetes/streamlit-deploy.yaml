@@ -16,7 +16,7 @@ spec:
         app: streamlit
     spec:
       containers:
-      - image: ekene4321/streamlit:v4
+      - image: ekene4321/streamlit:34e7e48
         name: streamlit
         ports:
         - containerPort: 8501
