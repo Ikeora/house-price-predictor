@@ -19,10 +19,13 @@ on:
         description: "Run build and publish job"
         required: false
         default: "false"
-    release:
-      types: [created]
-      branches: [main]
-      tags: ['v*.*.*']
+  release:
+    types: [created]
+    branches: [main]
+    tags: ['v*.*.*']
+
+permissions:
+  contents: write
   
 jobs:
   data_processing:
