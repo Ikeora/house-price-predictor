@@ -204,11 +204,11 @@ jobs:
           COMMIT_HASH=$(echo ${{github.sha}} | cut -c1-7)
           
           sed -i "s|image: ekene4321/house-price-model:.*|image: ekene4321/house-price-model:$COMMIT_HASH|g" deployment/kubernetes/model-deploy.yaml
-          sed -i "s|image: ekene4321/streamlit:.*|image: ekene4321/streamlit:$COMMIT_HASH|g" deployment/kubernetes/streamlit_deploy.yaml
+          sed -i "s|image: ekene4321/streamlit:.*|image: ekene4321/streamlit:$COMMIT_HASH|g" deployment/kubernetes/streamlit-deploy.yaml
           
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           
-          git add deployment/kubernetes/model-deploy.yaml deployment/kubernetes/streamlit_deploy.yaml
+          git add deployment/kubernetes/model-deploy.yaml deployment/kubernetes/streamlit-deploy.yaml
           git commit -m "chore: automated backend/frontend deployment to $COMMIT_HASH [skip ci]"
           git push
