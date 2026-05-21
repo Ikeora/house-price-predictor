@@ -47,16 +47,54 @@ The architecture decouples the machine learning workspace, container registries,
 * Cost-Efficient Local Replication: Utilizes KinD (Kubernetes in Docker) to replicate enterprise cloud paradigms (declarative states, self-healing pods, control planes) directly on a local workstation for zero-cost development.
 
 ------------------------------
+------------------------------
 ## 📦 Project Structure
 
 house-price-predictor/
 ├── .github/workflows/      # GitHub Actions end-to-end CI/CD pipeline
 ├── configs/                # Model hyperparameter and evaluation settings
 ├── data/                   # Raw and temporary staging datasets
+├── .github/workflows/      # GitHub Actions end-to-end CI/CD pipeline
+├── configs/                # Model hyperparameter and evaluation settings
+├── data/                   # Raw and temporary staging datasets
 ├── deployment/
 │   └── kubernetes/         # Production-ready K8s Manifests (Deployments, Services)
 ├── models/                 # Staged binaries (trained models and preprocessors)
+│   └── kubernetes/         # Production-ready K8s Manifests (Deployments, Services)
+├── models/                 # Staged binaries (trained models and preprocessors)
 ├── src/
+│   ├── data/               # Data cleaning and robust processing validation
+│   ├── features/           # Feature engineering and serialization logic
+│   └── models/             # XGBoost model training, assessment, & MLflow logging
+└── streamlit_app/          # Streamlit dashboard source and isolated Docker environment
+
+------------------------------
+## 🛠️ Automated CI/CD Pipeline (GitHub Actions)
+The declarative .github/workflows/ pipeline triggers on code changes and performs the following tasks:
+
+   1. Environment Initialization: Boots an active runner and provisions an isolated Python environment.
+   2. Data & Feature Engineering: Executes data transformation and saves feature preprocessing binaries (preprocessor.pkl).
+   3. Model Training & Experiment Tracking: Orchestrates an ephemeral MLflow engine via Docker to store runs, metrics, and parameters, producing the final deployment-ready model binary.
+   4. Container Integration Tests:
+   * Compiles the FastAPI app and verifies the /health endpoint responds successfully.
+      * Compiles the Streamlit app and validates UI initialization stability.
+   5. Image Distribution: Labels and pushes stable containers to Docker Hub under explicit commit signatures.
+   6. GitOps Synchronization: Dynamically executes string updates (sed) on the staging Kubernetes files, commits the changed images using an automated runner token, and drops a [skip ci] flag to safely break automation infinite loops.
+
+------------------------------
+## ☸️ Local Infrastructure & Service Architecture
+The microservices are hosted locally inside a KinD (Kubernetes in Docker) cluster, with deployments and configurations synchronized dynamically using ArgoCD.
+## Networking & Port Layout
+The cluster exposes application interfaces directly to the local host machine using NodePort configurations:
+
+* model Service (type: NodePort): Maps the internal FastAPI endpoint (port 8000) to the local host machine at http://localhost:30100.
+* streamlit Service (type: NodePort): Maps the frontend UI layout (port 8501) to the local host machine at http://localhost:30000.
+
+------------------------------
+## 💻 Local Testing & Verification
+To verify the prediction contract directly via your local terminal, query the exposed model endpoint:
+
+curl -X POST "http://localhost:30100/predict" \
 │   ├── data/               # Data cleaning and robust processing validation
 │   ├── features/           # Feature engineering and serialization logic
 │   └── models/             # XGBoost model training, assessment, & MLflow logging
