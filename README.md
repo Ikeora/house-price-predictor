@@ -49,7 +49,7 @@ The architecture decouples the machine learning workspace, container registries,
 ------------------------------
 ------------------------------
 ## 📦 Project Structure
-
+```
 house-price-predictor/
 ├── .github/workflows/      # GitHub Actions end-to-end CI/CD pipeline
 ├── configs/                # Model hyperparameter and evaluation settings
@@ -67,7 +67,7 @@ house-price-predictor/
 │   ├── features/           # Feature engineering and serialization logic
 │   └── models/             # XGBoost model training, assessment, & MLflow logging
 └── streamlit_app/          # Streamlit dashboard source and isolated Docker environment
-
+```
 ------------------------------
 ## 🛠️ Automated CI/CD Pipeline (GitHub Actions)
 The declarative .github/workflows/ pipeline triggers on code changes and performs the following tasks:
@@ -93,13 +93,13 @@ The cluster exposes application interfaces directly to the local host machine us
 ------------------------------
 ## 💻 Local Testing & Verification
 To verify the prediction contract directly via your local terminal, query the exposed model endpoint:
-
+```
 curl -X POST "http://localhost:30100/predict" \
 │   ├── data/               # Data cleaning and robust processing validation
 │   ├── features/           # Feature engineering and serialization logic
 │   └── models/             # XGBoost model training, assessment, & MLflow logging
 └── streamlit_app/          # Streamlit dashboard source and isolated Docker environment
-
+```
 ------------------------------
 ## 🛠️ Automated CI/CD Pipeline (GitHub Actions)
 The declarative .github/workflows/ pipeline triggers on code changes and performs the following tasks:
@@ -125,7 +125,7 @@ The cluster exposes application interfaces directly to the local host machine us
 ------------------------------
 ## 💻 Local Testing & Verification
 To verify the prediction contract directly via your local terminal, query the exposed model endpoint:
-
+```
 curl -X POST "http://localhost:30100/predict" \
 -H "Content-Type: application/json" \
 -d '{
@@ -136,7 +136,7 @@ curl -X POST "http://localhost:30100/predict" \
   "year_built": 2000
   "condition": "Good"
 }'
-
+```
 ------------------------------
 ## 📈 Future Cloud Roadmap
 Because this architecture strictly adheres to cloud-native Kubernetes standards, migrating this exact pipeline to a cloud provider like Azure AKS (Azure Kubernetes Service) requires zero pipeline changes. The operational steps for production scale include:
