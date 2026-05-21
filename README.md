@@ -1,8 +1,10 @@
-## 🏠 Automated End-to-End MLOps Pipeline: GitOps Simulation
+## Automated End-to-End MLOps Pipeline: GitOps Simulation
+
 This project demonstrates a production-designed, fully automated MLOps (Machine Learning Operations) ecosystem simulated locally. It handles the entire lifecycle of a machine learning model—from raw data engineering and MLflow experiment tracking to containerized microservices and automated GitOps continuous delivery inside a Kubernetes cluster via ArgoCD.
 To eliminate cloud hosting costs during development, the entire production infrastructure is replicated locally using KinD (Kubernetes in Docker).
+
 ------------------------------
-## 🏗️ System Architecture & Workflow
+## System Architecture & Workflow
 The architecture decouples the machine learning workspace, container registries, pipeline runners, and cluster orchestrators to ensure high security, independent scaling, and high availability.
 
 ```
@@ -38,7 +40,7 @@ The architecture decouples the machine learning workspace, container registries,
 └────────────────────────────────────────────────────────┘
 ```
 ------------------------------
-## 🚀 Key MLOps Engineering Highlights
+## Key MLOps Engineering Highlights
 
 * Automated GitOps Paradigm: Implemented Git as the strict Single Source of Truth. Local cluster configurations automatically mirror GitHub repository changes without manual kubectl intervention.
 * Decoupled Microservices: Separated the model compute layer (FastAPI backend) from the UI presentation layer (Streamlit frontend) to minimize deployment dependencies and optimize scaling.
@@ -48,7 +50,7 @@ The architecture decouples the machine learning workspace, container registries,
 
 ------------------------------
 ------------------------------
-## 📦 Project Structure
+## Project Structure
 ```
 house-price-predictor/
 ├── .github/workflows/      # GitHub Actions end-to-end CI/CD pipeline
@@ -69,7 +71,7 @@ house-price-predictor/
 └── streamlit_app/          # Streamlit dashboard source and isolated Docker environment
 ```
 ------------------------------
-## 🛠️ Automated CI/CD Pipeline (GitHub Actions)
+## Automated CI/CD Pipeline (GitHub Actions)
 The declarative .github/workflows/ pipeline triggers on code changes and performs the following tasks:
 
    1. Environment Initialization: Boots an active runner and provisions an isolated Python environment.
@@ -82,7 +84,7 @@ The declarative .github/workflows/ pipeline triggers on code changes and perform
    6. GitOps Synchronization: Dynamically executes string updates (sed) on the staging Kubernetes files, commits the changed images using an automated runner token, and drops a [skip ci] flag to safely break automation infinite loops.
 
 ------------------------------
-## ☸️ Local Infrastructure & Service Architecture
+## Local Infrastructure & Service Architecture
 The microservices are hosted locally inside a KinD (Kubernetes in Docker) cluster, with deployments and configurations synchronized dynamically using ArgoCD.
 ## Networking & Port Layout
 The cluster exposes application interfaces directly to the local host machine using NodePort configurations:
@@ -91,7 +93,7 @@ The cluster exposes application interfaces directly to the local host machine us
 * streamlit Service (type: NodePort): Maps the frontend UI layout (port 8501) to the local host machine at http://localhost:30000.
 
 ------------------------------
-## 💻 Local Testing & Verification
+## Local Testing & Verification
 To verify the prediction contract directly via your local terminal, query the exposed model endpoint:
 ```
 curl -X POST "http://localhost:30100/predict" \
@@ -101,7 +103,7 @@ curl -X POST "http://localhost:30100/predict" \
 └── streamlit_app/          # Streamlit dashboard source and isolated Docker environment
 ```
 ------------------------------
-## 🛠️ Automated CI/CD Pipeline (GitHub Actions)
+## Automated CI/CD Pipeline (GitHub Actions)
 The declarative .github/workflows/ pipeline triggers on code changes and performs the following tasks:
 
    1. Environment Initialization: Boots an active runner and provisions an isolated Python environment.
@@ -114,7 +116,7 @@ The declarative .github/workflows/ pipeline triggers on code changes and perform
    6. GitOps Synchronization: Dynamically executes string updates (sed) on the staging Kubernetes files, commits the changed images using an automated runner token, and drops a [skip ci] flag to safely break automation infinite loops.
 
 ------------------------------
-## ☸️ Local Infrastructure & Service Architecture
+## Local Infrastructure & Service Architecture
 The microservices are hosted locally inside a KinD (Kubernetes in Docker) cluster, with deployments and configurations synchronized dynamically using ArgoCD.
 ## Networking & Port Layout
 The cluster exposes application interfaces directly to the local host machine using NodePort configurations:
@@ -123,7 +125,7 @@ The cluster exposes application interfaces directly to the local host machine us
 * streamlit Service (type: NodePort): Maps the frontend UI layout (port 8501) to the local host machine at http://localhost:30000.
 
 ------------------------------
-## 💻 Local Testing & Verification
+## Local Testing & Verification
 To verify the prediction contract directly via your local terminal, query the exposed model endpoint:
 ```
 curl -X POST "http://localhost:30100/predict" \
@@ -138,7 +140,7 @@ curl -X POST "http://localhost:30100/predict" \
 }'
 ```
 ------------------------------
-## 📈 Future Cloud Roadmap
+## Future Cloud Roadmap
 Because this architecture strictly adheres to cloud-native Kubernetes standards, migrating this exact pipeline to a cloud provider like Azure AKS (Azure Kubernetes Service) requires zero pipeline changes. The operational steps for production scale include:
 
    1. Converting Service types from NodePort to secure internal ClusterIP instances.
