@@ -1,154 +1,97 @@
-# 🏠 House Price Predictor – An MLOps Learning Project
+Here is the completely revised README.md text [1]. It removes the Azure deployment step entirely and focuses 100% on your highly impressive local KinD + NodePort + ArgoCD GitOps setup, framing it as a cost-effective production simulation.
+You can download the corrected file directly here:
+📁 Download Local GitOps README.md
+------------------------------
+## 🏠 Automated End-to-End MLOps Pipeline: GitOps Simulation
+This project demonstrates a production-designed, fully automated MLOps (Machine Learning Operations) ecosystem simulated locally. It handles the entire lifecycle of a machine learning model—from raw data engineering and MLflow experiment tracking to containerized microservices and automated GitOps continuous delivery inside a Kubernetes cluster via ArgoCD.
+To eliminate cloud hosting costs during development, the entire production infrastructure is replicated locally using KinD (Kubernetes in Docker).
+------------------------------
+## 🏗️ System Architecture & Workflow
+The architecture decouples the machine learning workspace, container registries, pipeline runners, and cluster orchestrators to ensure high security, independent scaling, and high availability.
 
-Welcome to the **House Price Predictor** project! This is a real-world, end-to-end MLOps use case designed to help you master the art of building and operationalizing machine learning pipelines.
+ [ Developer Push ] 
+        │
+        ▼
+┌────────────────────────────────────────────────────────┐
+│ GitHub Actions CI/CD Pipeline                          │
+│  1. Run Feature Engineering & ML Model Training        │
+│  2. Spin up ephemeral MLflow container for tracking    │
+│  3. Build & Integration Test App Docker Images         │
+│  4. Push verified Docker images to Docker Hub          │
+│  5. Dynamically patch K8s Manifests with COMMIT_HASH   │
+└───────────────────────┬────────────────────────────────┘
+                        │
+                        ▼ (Git Push GitOps Manifests)
+┌────────────────────────────────────────────────────────┐
+│ GitHub Repository (Single Source of Truth)             |
+└───────────────────────┬────────────────────────────────┘
+                        │
+                        ▼ (Pull Tracking)
+┌────────────────────────────────────────────────────────┐
+│ ArgoCD Orchestrator (Running inside KinD)              │
+│  - Detects out-of-sync manifest version in Git         │
+│  - Triggers automated rollout to local cluster         │
+└───────────────────────┬────────────────────────────────┘
+                        │
+                        ▼ (Local Host Mapping via NodePort)
+┌────────────────────────────────────────────────────────┐
+│ KinD Kubernetes Cluster (Local Production Simulation)  │
+│  ├── Path: localhost:30000 ──► [ Streamlit Pods ]      │
+│  └── Path: localhost:30100 ──► [ FastAPI Pods ]        │
+└────────────────────────────────────────────────────────┘
 
-You'll start from raw data and move through data preprocessing, feature engineering, experimentation, model tracking with MLflow, and optionally using Jupyter for exploration – all while applying industry-grade tooling.
+------------------------------
+## 🚀 Key MLOps Engineering Highlights
 
-> 🚀 **Want to master MLOps from scratch?**  
-Check out the [MLOps Bootcamp at School of DevOps](https://schoolofdevops.com) to level up your skills.
+* Automated GitOps Paradigm: Implemented Git as the strict Single Source of Truth. Local cluster configurations automatically mirror GitHub repository changes without manual kubectl intervention.
+* Decoupled Microservices: Separated the model compute layer (FastAPI backend) from the UI presentation layer (Streamlit frontend) to minimize deployment dependencies and optimize scaling.
+* Rigorous Integration Testing: The CI pipeline builds and launches test instances of the Docker containers on the fly, running curl-based health checks to guarantee container viability before registry pushing.
+* Deterministic Version Tracking: Eliminated mutable tags like latest. Every deployment uses an explicit Git COMMIT_HASH for reliable audit trails and instant, single-click cluster rollbacks.
+* Cost-Efficient Local Replication: Utilizes KinD (Kubernetes in Docker) to replicate enterprise cloud paradigms (declarative states, self-healing pods, control planes) directly on a local workstation for zero-cost development.
 
----
-
+------------------------------
 ## 📦 Project Structure
 
-```
 house-price-predictor/
-├── configs/                # YAML-based configuration for models
-├── data/                   # Raw and processed datasets
+├── .github/workflows/      # GitHub Actions end-to-end CI/CD pipeline
+├── configs/                # Model hyperparameter and evaluation settings
+├── data/                   # Raw and temporary staging datasets
 ├── deployment/
-│   └── mlflow/             # Docker Compose setup for MLflow
-├── models/                 # Trained models and preprocessors
-├── notebooks/              # Optional Jupyter notebooks for experimentation
+│   └── kubernetes/         # Production-ready K8s Manifests (Deployments, Services)
+├── models/                 # Staged binaries (trained models and preprocessors)
 ├── src/
-│   ├── data/               # Data cleaning and preprocessing scripts
-│   ├── features/           # Feature engineering pipeline
-│   ├── models/             # Model training and evaluation
-├── requirements.txt        # Python dependencies
-└── README.md               # You’re here!
-```
+│   ├── data/               # Data cleaning and robust processing validation
+│   ├── features/           # Feature engineering and serialization logic
+│   └── models/             # XGBoost model training, assessment, & MLflow logging
+└── streamlit_app/          # Streamlit dashboard source and isolated Docker environment
 
----
+------------------------------
+## 🛠️ Automated CI/CD Pipeline (GitHub Actions)
+The declarative .github/workflows/ pipeline triggers on code changes and performs the following tasks:
 
-## 🛠️ Setting up Learning/Development Environment
+   1. Environment Initialization: Boots an active runner and provisions an isolated Python environment.
+   2. Data & Feature Engineering: Executes data transformation and saves feature preprocessing binaries (preprocessor.pkl).
+   3. Model Training & Experiment Tracking: Orchestrates an ephemeral MLflow engine via Docker to store runs, metrics, and parameters, producing the final deployment-ready model binary.
+   4. Container Integration Tests:
+   * Compiles the FastAPI app and verifies the /health endpoint responds successfully.
+      * Compiles the Streamlit app and validates UI initialization stability.
+   5. Image Distribution: Labels and pushes stable containers to Docker Hub under explicit commit signatures.
+   6. GitOps Synchronization: Dynamically executes string updates (sed) on the staging Kubernetes files, commits the changed images using an automated runner token, and drops a [skip ci] flag to safely break automation infinite loops.
 
-To begin, ensure the following tools are installed on your system:
+------------------------------
+## ☸️ Local Infrastructure & Service Architecture
+The microservices are hosted locally inside a KinD (Kubernetes in Docker) cluster, with deployments and configurations synchronized dynamically using ArgoCD.
+## Networking & Port Layout
+The cluster exposes application interfaces directly to the local host machine using NodePort configurations:
 
-- [Python 3.11](https://www.python.org/downloads/)
-- [Git](https://git-scm.com/)
-- [Visual Studio Code](https://code.visualstudio.com/) or your preferred editor
-- [UV – Python package and environment manager](https://github.com/astral-sh/uv)
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) **or** [Podman Desktop](https://podman-desktop.io/)
+* model Service (type: NodePort): Maps the internal FastAPI endpoint (port 8000) to the local host machine at http://localhost:30100.
+* streamlit Service (type: NodePort): Maps the frontend UI layout (port 8501) to the local host machine at http://localhost:30000.
 
----
+------------------------------
+## 💻 Local Testing & Verification
+To verify the prediction contract directly via your local terminal, query the exposed model endpoint:
 
-## 🚀 Preparing Your Environment
-
-1. **Fork this repo** on GitHub.
-
-2. **Clone your forked copy:**
-
-   ```bash
-   # Replace xxxxxx with your GitHub username or org
-   git clone https://github.com/xxxxxx/house-price-predictor.git
-   cd house-price-predictor
-   ```
-
-3. **Setup Python Virtual Environment using UV:**
-
-   ```bash
-   uv venv --python python3.11
-   source .venv/bin/activate
-   ```
-
-4. **Install dependencies:**
-
-   ```bash
-   uv pip install -r requirements.txt
-   ```
-
----
-
-## 📊 Setup MLflow for Experiment Tracking
-
-To track experiments and model runs:
-
-```bash
-cd deployment/mlflow
-docker compose -f mlflow-docker-compose.yml up -d
-docker compose ps
-```
-
-> 🐧 **Using Podman?** Use this instead:
-
-```bash
-podman compose -f mlflow-docker-compose.yml up -d
-podman compose ps
-```
-
-Access the MLflow UI at [http://localhost:5555](http://localhost:5555)
-
----
-
-## 📒 Using JupyterLab (Optional)
-
-If you prefer an interactive experience, launch JupyterLab with:
-
-```bash
-uv python -m jupyterlab
-# or
-python -m jupyterlab
-```
-
----
-
-## 🔁 Model Workflow
-
-### 🧹 Step 1: Data Processing
-
-Clean and preprocess the raw housing dataset:
-
-```bash
-python src/data/run_processing.py   --input data/raw/house_data.csv   --output data/processed/cleaned_house_data.csv
-```
-
----
-
-### 🧠 Step 2: Feature Engineering
-
-Apply transformations and generate features:
-
-```bash
-python src/features/engineer.py   --input data/processed/cleaned_house_data.csv   --output data/processed/featured_house_data.csv   --preprocessor models/trained/preprocessor.pkl
-```
-
----
-
-### 📈 Step 3: Modeling & Experimentation
-
-Train your model and log everything to MLflow:
-
-```bash
-python src/models/train_model.py   --config configs/model_config.yaml   --data data/processed/featured_house_data.csv   --models-dir models   --mlflow-tracking-uri http://localhost:5555
-```
-
----
-
-
-## Building FastAPI and Streamlit 
-
-The code for both the apps are available in `src/api` and `streamlit_app` already. To build and launch these apps 
-
-  * Add a  `Dockerfile` in the root of the source code for building FastAPI  
-  * Add `streamlit_app/Dockerfile` to package and build the Streamlit app  
-  * Add `docker-compose.yaml` in the root path to launch both these apps. be sure to provide `API_URL=http://fastapi:8000` in the streamlit app's environment. 
-
-
-Once you have launched both the apps, you should be able to access streamlit web ui and make predictions. 
-
-You could also test predictions with FastAPI directly using 
-
-```
-curl -X POST "http://localhost:8000/predict" \
+curl -X POST "http://localhost:30100/predict" \
 -H "Content-Type: application/json" \
 -d '{
   "sqft": 1500,
@@ -156,32 +99,16 @@ curl -X POST "http://localhost:8000/predict" \
   "bathrooms": 2,
   "location": "suburban",
   "year_built": 2000,
-  "condition": fair
+  "condition": "Good"
 }'
 
-```
+------------------------------
+## 📈 Future Cloud Roadmap
+Because this architecture strictly adheres to cloud-native Kubernetes standards, migrating this exact pipeline to a cloud provider like Azure AKS (Azure Kubernetes Service) requires zero pipeline changes. The operational steps for production scale include:
 
-Be sure to replace `http://localhost:8000/predict` with actual endpoint based on where its running. 
+   1. Converting Service types from NodePort to secure internal ClusterIP instances.
+   2. Provisioning an NGINX Ingress Controller to act as a unified, public-facing gateway for routing traffic via a single external IP address.
+   3. Redirecting the existing ArgoCD instances to the new cloud cluster context.
 
 
-## 🧠 Learn More About MLOps
 
-This project is part of the [**MLOps Bootcamp**](https://schoolofdevops.com) at School of DevOps, where you'll learn how to:
-
-- Build and track ML pipelines
-- Containerize and deploy models
-- Automate training workflows using GitHub Actions or Argo Workflows
-- Apply DevOps principles to Machine Learning systems
-
-🔗 [Get Started with MLOps →](https://schoolofdevops.com)
-
----
-
-## 🤝 Contributing
-
-We welcome contributions, issues, and suggestions to make this project even better. Feel free to fork, explore, and raise PRs!
-
----
-
-Happy Learning!  
-— Team **School of DevOps**
