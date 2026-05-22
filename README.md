@@ -3,6 +3,8 @@
 This project demonstrates a production-designed, fully automated MLOps (Machine Learning Operations) ecosystem simulated locally. It handles the entire lifecycle of a machine learning model—from raw data engineering and MLflow experiment tracking to containerized microservices and automated GitOps continuous delivery inside a Kubernetes cluster via ArgoCD.
 To eliminate cloud hosting costs during development, the entire production infrastructure is replicated locally using KinD (Kubernetes in Docker).
 
+![Streamlit App](img\streamlit_app.png)
+
 ------------------------------
 ## System Architecture & Workflow
 The architecture decouples the machine learning workspace, container registries, pipeline runners, and cluster orchestrators to ensure high security, independent scaling, and high availability.
@@ -82,6 +84,8 @@ The declarative .github/workflows/ pipeline triggers on code changes and perform
       * Compiles the Streamlit app and validates UI initialization stability.
    5. Image Distribution: Labels and pushes stable containers to Docker Hub under explicit commit signatures.
    6. GitOps Synchronization: Dynamically executes string updates (sed) on the staging Kubernetes files, commits the changed images using an automated runner token, and drops a [skip ci] flag to safely break automation infinite loops.
+
+![CI pipeline](img\CI_workflow.png)
 
 ------------------------------
 ## Local Infrastructure & Service Architecture
