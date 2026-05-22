@@ -16,7 +16,7 @@ spec:
         app: model
     spec:
       containers:
-      - image: ekene4321/house-price-model:1367430
+      - image: ekene4321/house-price-model:b5ca29b
         name: house-price-model
         ports:
         - containerPort: 8000
